@@ -1,0 +1,9 @@
+<DefaultWindow xmlns="https://spacestation14.io"
+               Title="Megaphone"
+               Size="300, 150"
+               Resizable="False">
+    <BoxContainer Orientation="Vertical" SeparationOverride="5">
+        <LineEdit Name="InputField" Placeholder="Enter message..." Access="Public"/>
+        <Button Name="SpeakButton" Text="Speak" Access="Public"/>
+    </BoxContainer>
+</DefaultWindow>
