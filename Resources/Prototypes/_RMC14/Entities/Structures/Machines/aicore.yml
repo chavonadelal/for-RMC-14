@@ -175,6 +175,13 @@
   - type: ApcPowerReceiver
     powerLoad: 0
     needsPower: false # Intentional
+  - type: ActivatableUI
+    key: enum.LuaScriptUiKey.Key
+  - type: UserInterface
+    interfaces:
+      enum.LuaScriptUiKey.Key:
+        type: LuaScriptBui
+  - type: LuaScriptComputer
 
 - type: entity
   parent: RMCAIConsoleARES

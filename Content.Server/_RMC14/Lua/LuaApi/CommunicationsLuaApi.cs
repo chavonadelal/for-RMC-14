@@ -1,7 +1,8 @@
 using System.Text;
-using Content.Server.Radio.EntitySystems;
+using Content.Shared._RMC14.ARES;
 using Content.Shared._RMC14.Marines.Announce;
 using Content.Shared.Radio;
+using Robust.Shared.Audio;
 using Robust.Shared.GameObjects;
 using Robust.Shared.Prototypes;
 
@@ -14,16 +15,16 @@ namespace Content.Server._RMC14.Lua.LuaApi;
 public sealed class CommunicationsLuaApi
 {
     private readonly StringBuilder _output;
-    private readonly RadioSystem _radio;
+    private readonly ARESSystem _ares;
     private readonly SharedMarineAnnounceSystem _marineAnnounce;
 
     public CommunicationsLuaApi(
         StringBuilder output,
-        RadioSystem radio,
+        ARESSystem ares,
         SharedMarineAnnounceSystem marineAnnounce)
     {
         _output = output;
-        _radio = radio;
+        _ares = ares;
         _marineAnnounce = marineAnnounce;
     }
 
@@ -36,15 +37,16 @@ public sealed class CommunicationsLuaApi
     }
 
     /// <summary>
-    ///     Sends a message to the given radio channel.
-    ///     Source entity is a placeholder until execution context is added.
+    ///     Sends a message to the given radio channel as ARES (same as other ARES radio announcements).
+    ///     channelId is the radio channel prototype id (e.g. "Common", "Command").
     /// </summary>
     public void SendRadio(string channelId, string message)
     {
         try
         {
             var channel = new ProtoId<RadioChannelPrototype>(channelId);
-            _radio.SendRadioMessage(EntityUid.Invalid, message ?? string.Empty, channel, EntityUid.Invalid, escapeMarkup: false);
+            var ares = _ares.EnsureARES();
+            _marineAnnounce.AnnounceRadio(ares.Owner, message ?? string.Empty, channel);
         }
         catch (Exception ex)
         {
@@ -53,10 +55,12 @@ public sealed class CommunicationsLuaApi
     }
 
     /// <summary>
-    ///     Makes an announcement to all marines.
+    ///     Makes an ARES announcement to all marines (formatted as from ARES, with ARES sound).
+    ///     Use from the ARES Lua console so announcements appear as from the ship AI.
     /// </summary>
-    public void AnnounceToMarines(string message)
+    public void Announce(string message)
     {
-        _marineAnnounce.AnnounceToMarines(message ?? string.Empty);
+        var sound = new SoundPathSpecifier("/Audio/_RMC14/AI/announce.ogg");
+        _marineAnnounce.AnnounceARES(null, message ?? string.Empty, sound);
     }
 }
