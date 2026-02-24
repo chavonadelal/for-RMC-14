@@ -16,6 +16,7 @@
   <ItemGroup>
     <PackageReference Include="Discord.Net" />
     <PackageReference Include="JetBrains.Annotations" PrivateAssets="All" />
+    <PackageReference Include="MoonSharp" />
     <PackageReference Include="NetCord" />
   </ItemGroup>
   <ItemGroup>
