@@ -15,9 +15,13 @@ public sealed class LuaScriptRunBuiMsg(string code) : BoundUserInterfaceMessage
 }
 
 [Serializable, NetSerializable]
-public sealed class LuaScriptBuiState(string output, string? error, bool timedOut) : BoundUserInterfaceState
+public sealed class LuaScriptStopBuiMsg : BoundUserInterfaceMessage;
+
+[Serializable, NetSerializable]
+public sealed class LuaScriptBuiState(string output, string? error, bool timedOut, bool isActive) : BoundUserInterfaceState
 {
     public readonly string Output = output;
     public readonly string? Error = error;
     public readonly bool TimedOut = timedOut;
+    public readonly bool IsActive = isActive;
 }

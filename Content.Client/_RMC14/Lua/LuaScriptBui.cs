@@ -11,13 +11,48 @@ public sealed class LuaScriptBui(EntityUid owner, Enum uiKey) : BoundUserInterfa
 {
     private LuaScriptWindow? _window;
     private Action<BaseButton.ButtonEventArgs>? _runHandler;
+    private Action<BaseButton.ButtonEventArgs>? _stopHandler;
 
     protected override void Open()
     {
         base.Open();
         _window = this.CreateWindow<LuaScriptWindow>();
-        _runHandler = _ => SendMessage(new LuaScriptRunBuiMsg(Rope.Collapse(_window!.CodeInput.TextRope)));
+        _runHandler = _ => OnRunPressed();
+        _stopHandler = _ => OnStopPressed();
         _window.RunButton.OnPressed += _runHandler;
+    }
+
+    private void OnRunPressed()
+    {
+        if (_window == null)
+            return;
+        SendMessage(new LuaScriptRunBuiMsg(Rope.Collapse(_window.CodeInput.TextRope)));
+        _window.CodeInput.Editable = false;
+        SwitchToStop();
+    }
+
+    private void OnStopPressed()
+    {
+        SendMessage(new LuaScriptStopBuiMsg());
+    }
+
+    private void SwitchToRun()
+    {
+        if (_window == null)
+            return;
+        _window.RunButton.Text = "Run";
+        _window.RunButton.OnPressed -= _stopHandler;
+        _window.RunButton.OnPressed += _runHandler;
+        _window.CodeInput.Editable = true;
+    }
+
+    private void SwitchToStop()
+    {
+        if (_window == null)
+            return;
+        _window.RunButton.Text = "Stop";
+        _window.RunButton.OnPressed -= _runHandler;
+        _window.RunButton.OnPressed += _stopHandler;
     }
 
     protected override void UpdateState(BoundUserInterfaceState state)
@@ -32,12 +67,25 @@ public sealed class LuaScriptBui(EntityUid owner, Enum uiKey) : BoundUserInterfa
         if (s.TimedOut)
             text = (string.IsNullOrEmpty(text) ? "" : text + "\n") + "[Timed out]";
         _window.OutputDisplay.TextRope = new Rope.Leaf(text);
+
+        if (s.IsActive)
+        {
+            _window.CodeInput.Editable = false;
+            SwitchToStop();
+        }
+        else
+        {
+            SwitchToRun();
+        }
     }
 
     protected override void Dispose(bool disposing)
     {
-        if (disposing && _window != null && _runHandler != null)
+        if (disposing && _window != null)
+        {
             _window.RunButton.OnPressed -= _runHandler;
+            _window.RunButton.OnPressed -= _stopHandler;
+        }
         base.Dispose(disposing);
     }
 }

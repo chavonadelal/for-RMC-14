@@ -11,22 +11,31 @@ public sealed class LuaScriptComputerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
+        SubscribeLocalEvent<LuaSessionStateChangedEvent>(OnSessionStateChanged);
         Subs.BuiEvents<LuaScriptComputerComponent>(LuaScriptUiKey.Key, subs =>
         {
             subs.Event<LuaScriptRunBuiMsg>(OnRun);
+            subs.Event<LuaScriptStopBuiMsg>(OnStop);
         });
+    }
+
+    private void OnSessionStateChanged(LuaSessionStateChangedEvent ev)
+    {
+        _ui.SetUiState(ev.Owner, LuaScriptUiKey.Key, new LuaScriptBuiState(
+            ev.Output,
+            ev.Error,
+            ev.TimedOut,
+            ev.IsActive
+        ));
     }
 
     private void OnRun(Entity<LuaScriptComputerComponent> ent, ref LuaScriptRunBuiMsg msg)
     {
-        var result = _luaRunner.Run(msg.Code);
-        var output = result.Output;
-        if (result.Success && !result.TimedOut)
-            output += (string.IsNullOrEmpty(output) ? "" : "\n") + "[OK] Task completed";
-        _ui.SetUiState(ent.Owner, LuaScriptUiKey.Key, new LuaScriptBuiState(
-            output,
-            result.Error,
-            result.TimedOut
-        ));
+        _luaRunner.RunWithSession(ent.Owner, msg.Actor, msg.Code);
+    }
+
+    private void OnStop(Entity<LuaScriptComputerComponent> ent, ref LuaScriptStopBuiMsg msg)
+    {
+        _luaRunner.StopSession(ent.Owner, msg.Actor);
     }
 }
