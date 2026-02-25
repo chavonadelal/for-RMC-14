@@ -61,16 +61,18 @@ public sealed class LuaScriptRunnerSystem : EntitySystem
     }
 
     /// <summary>
-    ///     Stops the session and raises LuaSessionStateChangedEvent with IsActive: false.
+    ///     Stops the session (clears subscriptions) and raises LuaSessionStateChangedEvent with IsActive: false.
+    ///     Session and output buffer are kept so that the next Run appends to the same output.
     /// </summary>
     public void StopSession(EntityUid owner, EntityUid actor)
     {
         var key = (owner, actor);
-        if (!_sessions.Remove(key, out var session))
+        if (!_sessions.TryGetValue(key, out var session))
         {
             RaiseLocalEvent(new LuaSessionStateChangedEvent(owner, actor, string.Empty, null, false, false));
             return;
         }
+        session.ClearSubscriptions();
         RaiseLocalEvent(new LuaSessionStateChangedEvent(session.Owner, session.Actor, session.Output.ToString(), null, false, false));
     }
 
