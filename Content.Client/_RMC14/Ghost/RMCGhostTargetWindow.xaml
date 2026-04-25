@@ -1,0 +1,46 @@
+<DefaultWindow xmlns="https://spacestation14.io"
+               xmlns:gfx="clr-namespace:Robust.Client.Graphics;assembly=Robust.Client"
+               Title="{Loc 'rmc-ghost-target-window-title'}"
+               MinSize="500 520"
+               SetSize="500 700">
+    <PanelContainer>
+        <PanelContainer.PanelOverride>
+            <gfx:StyleBoxFlat BackgroundColor="#151515" />
+        </PanelContainer.PanelOverride>
+        <BoxContainer Orientation="Vertical" Margin="8" SeparationOverride="7">
+            <PanelContainer>
+                <PanelContainer.PanelOverride>
+                    <gfx:StyleBoxFlat BackgroundColor="#1d1d1d" BorderColor="#252525" BorderThickness="1" />
+                </PanelContainer.PanelOverride>
+                <BoxContainer Orientation="Horizontal" Margin="8 6" SeparationOverride="7">
+                    <BoxContainer Name="SearchIconSlot"
+                                  MinSize="18 18"
+                                  VerticalAlignment="Center" />
+                    <LineEdit Name="SearchBar"
+                              PlaceHolder="{Loc 'rmc-ghost-target-window-search'}"
+                              HorizontalExpand="True"
+                              MinHeight="24" />
+                    <BoxContainer Name="MostFollowedSlot"
+                                  MinSize="28 24"
+                                  VerticalAlignment="Center" />
+                    <BoxContainer Name="RefreshSlot"
+                                  MinSize="28 24"
+                                  VerticalAlignment="Center" />
+                </BoxContainer>
+            </PanelContainer>
+            <Label Name="StatusLabel"
+                   HorizontalExpand="True"
+                   HorizontalAlignment="Center"
+                   FontColorOverride="#d7d7d7" />
+            <ScrollContainer Name="TargetsScroll"
+                             VerticalExpand="True"
+                             HorizontalExpand="True"
+                             HScrollEnabled="False">
+                <BoxContainer Name="SectionsContainer"
+                              Orientation="Vertical"
+                              HorizontalExpand="True"
+                              SeparationOverride="8" />
+            </ScrollContainer>
+        </BoxContainer>
+    </PanelContainer>
+</DefaultWindow>
